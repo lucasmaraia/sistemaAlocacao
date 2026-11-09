@@ -69,11 +69,31 @@ create table reservas (
 
 As reservas referenciam condutores (`cnh`) e automóveis (`renavam`), mas sem chave estrangeira declarada.
 
+## Configuração
+
+A conexão com o banco é lida de variáveis de ambiente, com valores padrão para um MySQL local:
+
+| Variável      | Padrão      |
+|---------------|-------------|
+| `DB_HOST`     | `localhost` |
+| `DB_USER`     | `root`      |
+| `DB_PASSWORD` | vazio       |
+| `DB_NAME`     | `locauto` |
+
+```bash
+export DB_HOST="localhost"
+export DB_USER="root"
+export DB_PASSWORD="sua-senha"
+export DB_NAME="locauto"
+```
+
+No Windows (PowerShell), use `$env:DB_USER = "root"`.
+
 ## Como rodar
 
 1. Suba um ambiente com PHP e MySQL.
 2. Importe o `locauto.sql`.
-3. Ajuste as credenciais no método `ConectaBD()` de cada uma das quatro classes.
+3. Configure as variáveis de ambiente do banco (veja a seção acima).
 4. Sirva a pasta:
 
 ```bash
@@ -84,7 +104,8 @@ php -S localhost:8000
 
 ## Ressalvas (código de 2022)
 
-- **Credenciais no repositório.** Host, usuário e senha de um banco ClearDB do Heroku estão escritos dentro do método `ConectaBD()` de cada classe. O serviço foi descontinuado e as credenciais estão mortas, mas o padrão certo é usar variáveis de ambiente — e centralizar a conexão em um único lugar, em vez de repetir em quatro classes.
+- ~~**Credenciais no repositório.**~~ **Corrigido:** o método `ConectaBD()` das quatro classes agora lê variáveis de ambiente. As credenciais antigas (um banco ClearDB do Heroku) seguem no histórico de commits, mas o serviço foi descontinuado e elas estão mortas.
+- **Conexão repetida em quatro classes.** O `ConectaBD()` é copiado e colado em `Condutores`, `Automoveis`, `Reservas` e `Cobrancas`. O certo seria centralizar em um único arquivo de conexão incluído pelas quatro.
 - **SQL injection.** Todas as queries interpolam os atributos do objeto (vindos de `$_REQUEST`) diretamente na string SQL. Nas telas `_300`, o código concatena o parâmetro na cláusula `WHERE` sem nem aspas. O correto são *prepared statements*.
 - O `composer.json` está vazio: não há dependências gerenciadas.
 - Chaves primárias informadas manualmente (CNH, RENAVAM, número da reserva), sem `AUTO_INCREMENT` onde faria sentido.

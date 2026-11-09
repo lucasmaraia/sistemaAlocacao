@@ -15,10 +15,10 @@ Class Automoveis
 	{
 		// ----------------------- MYSQL --------------------
 		// conexão com a base de dados MySql 
-		$host = "us-cdbr-east-05.cleardb.net";
-		$usuario = "bf68e464fe141b";
-		$senha = "60267b9d";
-		$bd = "heroku_48cfa35d5c555ff";
+		$host = getenv("DB_HOST") ?: "localhost";
+		$usuario = getenv("DB_USER") ?: "root";
+		$senha = getenv("DB_PASSWORD") ?: "";
+		$bd = getenv("DB_NAME") ?: "locauto";
 		$this->con = mysqli_connect($host, $usuario, $senha, $bd);
 		return $this->con;
 	}
